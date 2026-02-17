@@ -13,7 +13,7 @@ E2E integration layer for the **multi-core decision ecosystem**. This repo is **
 | Core | Role |
 |------|------|
 | decision-schema | Types (Proposal, FinalDecision, PacketV2, Action), compat gate |
-| mdm-engine (ami-engine) | Proposal generation from state/context |
+| mdm-engine | Proposal generation from state/context |
 | ops-health-core | Kill switch → ops_deny_actions, ops_state |
 | decision-modulation-core (DMC) | Guards + modulate → FinalDecision |
 | evaluation-calibration-core | build_report(packets, expected_schema_minor=2) |

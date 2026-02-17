@@ -13,7 +13,7 @@ pip install -e ".[full]"
 ```python
 from harness import run_one_step
 
-state = {"mid": 0.5, "imbalance": 0.1, "depth": 50.0}
+state = {"signal_0": 0.5, "signal_1": 0.1, "state_scalar_a": 50.0}
 context = {"now_ms": 1700000000000}
 now_ms = 1700000000000
 
@@ -28,7 +28,7 @@ final_decision, packet, report = run_one_step(state, context, now_ms, run_id="ru
 Set these in `context` for DMC guards and trace:
 
 - `now_ms`, `last_event_ts_ms`, `run_id`
-- Ops: filled by harness from `update_kill_switch` → `ops_deny_actions`, `ops_state`, `ops_cooldown_until_ms`
+- Ops: set by harness from `update_kill_switch` → `ops_deny_actions`, `ops_state`, `ops_cooldown_until_ms`
 - Optional: `errors_in_window`, `steps_in_window`, `rate_limit_events`, `recent_failures`, `cooldown_until_ms`
 
 ## Invariant tests

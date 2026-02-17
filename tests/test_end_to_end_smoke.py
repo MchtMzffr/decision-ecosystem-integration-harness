@@ -5,7 +5,7 @@ from harness import run_one_step
 
 def test_run_one_step_returns_three_values() -> None:
     """run_one_step(state, context, now_ms) returns (FinalDecision, PacketV2, report)."""
-    state = {"mid": 0.5, "imbalance": 0.0, "depth": 0.0}
+    state = {"signal_0": 0.5, "signal_1": 0.0, "state_scalar_a": 0.0}
     context = {}
     now_ms = 1700000000000
     final_decision, packet, report = run_one_step(state, context, now_ms, run_id="smoke", step=0)

@@ -14,7 +14,8 @@ jobs:
         python-version: ["3.11", "3.12"]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,8 +25,7 @@ jobs:
       - name: Install decision-schema
         run: |
           pip install pytest
-          pip install decision-schema>=0.2,<0.3 2>/dev/null || \
-            pip install git+https://github.com/MchtMzffr/decision-schema.git
+          pip install decision-schema>=0.2,<0.3 2>/dev/null || pip install git+https://github.com/MchtMzffr/decision-schema.git
 
       - name: Install harness
         run: pip install -e . --no-deps 2>/dev/null || pip install -e .
