@@ -80,15 +80,10 @@ def _propose(state: dict[str, Any], context: dict[str, Any]) -> Proposal:
 
 
 def _state_to_features(state: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
-    """Map generic state keys to feature dict; add now_ms for staleness. Domain-agnostic surface."""
+    """Domain-agnostic passthrough: state keys are already generic (signal_0/1, state_scalar_a/b)."""
     features = dict(state)
-    # Generic keys (INV0): signal_0, signal_1, state_scalar_a map to MDM reference model expectations
-    features.setdefault("mid", features.get("signal_0", 0.5))
-    features.setdefault("imbalance", features.get("signal_1", 0.0))
-    features.setdefault("depth", features.get("state_scalar_a", 0.0))
-    features.setdefault("spread_bps", features.get("state_scalar_b", 0.0))
     if "now_ms" in context:
-        features["timestamp_ms"] = context["now_ms"]
+        features["now_ms"] = context["now_ms"]
     return features
 
 
