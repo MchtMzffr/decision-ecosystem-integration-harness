@@ -1,3 +1,5 @@
+# canonical-workflow (LF-only)
+
 name: CI
 
 on:

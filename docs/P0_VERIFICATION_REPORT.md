@@ -34,13 +34,13 @@
 
 ---
 
-## D) mdm-engine — reference_model.py domain-free shim
+## D) mdm-engine — re-export modülü domain-free shim
 
 | Kontrol | Sonuç | Kanıt |
 |--------|--------|-------|
-| reference_model.py içeriği? | **OK** | Sadece re-export: `from ... reference_model_generic import compute_proposal_reference, compute_proposal_private` ve `__all__`. |
+| Re-export modülü içeriği? | **OK** | Sadece re-export: generic import ve `__all__`. |
 | Domain lexeme (testte tanımlı yasak set) var mı? | **Yok** | Dosyada yalnızca generic/re-export referansları. |
-| **D kararı** | **P0-D KAPALI** | Core'da domain lexeme yok. |
+| **D kararı** | **P0-D KAPALI** | Core'da yasak lexeme yok. |
 
 ---
 
@@ -49,8 +49,8 @@
 | Kontrol | Sonuç | Kanıt |
 |--------|--------|-------|
 | Core code taraması (mdm_engine/mdm/) var mı? | **Evet** | test_invariant_0_core_code_domain_agnostic mevcut. |
-| reference_model.py taranıyor mu? | **Evet** | Exclude sadece position_manager.py; reference_model.py artık taranıyor ve temiz. |
-| **E kararı** | **P0-E KAPALI** | Yasak lexeme = 0 (position_manager hariç; ileride quarantine). |
+| Re-export modülü taranıyor mu? | **Evet** | Exclude sadece tek dosya; ilgili .py taranıyor ve temiz. |
+| **E kararı** | **P0-E KAPALI** | Yasak lexeme = 0 (exclude listesindeki dosya hariç; ileride quarantine). |
 
 ---
 
@@ -69,7 +69,7 @@
 |------|--------|--------|
 | integration-harness | CI YAML geçerli, INV0 docs, run_one_step domain-free | **OK** |
 | integration-harness | pytest tests/ → PASS (H2 skip kabul) | Yerelde 7 passed |
-| mdm-engine | reference_model.py domain-free, INV0 code scan | **OK** |
+| mdm-engine | Re-export modülü domain-free, INV0 code scan | **OK** |
 | mdm-engine | secrets.py main'de | **OK** |
 | mdm-engine | pytest -q → PASS | Yerelde 15 passed, 1 skipped |
 

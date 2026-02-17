@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 CI_PATH = Path(".github/workflows/ci.yml")
 
 # Canonical, deterministic workflow content (ASCII + LF only).
-LINES = [
+BASE_LINES = [
     "name: CI",
     "",
     "on:",
@@ -45,6 +46,19 @@ LINES = [
     "",
 ]
 
+
+def _build_content(*, bust_cache: bool) -> bytes:
+    lines = list(BASE_LINES)
+    if bust_cache:
+        if not lines or not lines[0].startswith("# canonical-workflow"):
+            lines.insert(0, "# canonical-workflow (LF-only)")
+            lines.insert(1, "")
+    text = "\n".join(lines)
+    if not text.endswith("\n"):
+        text += "\n"
+    return text.encode("utf-8")
+
+
 FORBIDDEN_UNICODE_RANGES = [
     (0x202A, 0x202E),  # bidi embeddings/overrides
     (0x2066, 0x2069),  # bidi isolates
@@ -66,9 +80,18 @@ def _contains_forbidden_unicode(text: str) -> list[str]:
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--force", action="store_true", help="Rewrite ci.yml even if bytes are identical.")
+    ap.add_argument(
+        "--bust-cache",
+        action="store_true",
+        help="Prepend a stable ASCII comment to force a new blob once.",
+    )
+    args = ap.parse_args()
+
     CI_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    content = ("\n".join(LINES)).encode("utf-8")
+    content = _build_content(bust_cache=args.bust_cache)
 
     # Byte-level hygiene checks BEFORE writing (defensive)
     assert b"\r" not in content, "Generated content must not contain CR"
@@ -79,9 +102,12 @@ def main() -> int:
     assert not hits, f"Generated content contains forbidden Unicode: {hits}"
 
     old = CI_PATH.read_bytes() if CI_PATH.exists() else b""
-    if old != content:
+    if args.force or old != content:
         CI_PATH.write_bytes(content)
-        print(f"[rewrite_ci_yml] wrote {CI_PATH} (bytes changed)")
+        if old != content:
+            print(f"[rewrite_ci_yml] wrote {CI_PATH} (bytes changed)")
+        else:
+            print(f"[rewrite_ci_yml] wrote {CI_PATH} (forced rewrite; bytes identical)")
     else:
         print(f"[rewrite_ci_yml] no change (already canonical)")
 
