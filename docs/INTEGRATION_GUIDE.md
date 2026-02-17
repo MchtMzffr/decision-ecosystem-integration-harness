@@ -13,7 +13,7 @@ pip install -e ".[full]"
 ```python
 from harness import run_one_step
 
-state = {"signal_0": 0.5, "signal_1": 0.1, "state_scalar_a": 50.0}
+state = {"signal_0": 0.5, "signal_1": 0.1, "state_scalar_a": 50.0, "state_scalar_b": 10.0}
 context = {"now_ms": 1700000000000}
 now_ms = 1700000000000
 
