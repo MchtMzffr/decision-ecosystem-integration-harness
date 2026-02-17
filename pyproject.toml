@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "decision-ecosystem-integration-harness"
+version = "0.1.0"
+description = "E2E integration harness for the multi-core decision ecosystem (contract-first; schema 0.2.x)"
+requires-python = ">=3.11"
+dependencies = [
+    "decision-schema>=0.2,<0.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "ruff"]
+full = [
+    "ami-engine>=0.1",
+    "ops-health-core",
+    "dmc-core",
+    "evaluation-calibration-core",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["harness*"]
