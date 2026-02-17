@@ -71,7 +71,7 @@ def run_one_step(
 def _propose(state: dict[str, Any], context: dict[str, Any]) -> Proposal:
     """Proposal from MDM; state used as features for minimal harness."""
     try:
-        from ami_engine.mdm.decision_engine import DecisionEngine
+        from mdm_engine.mdm.decision_engine import DecisionEngine
         engine = DecisionEngine(confidence_threshold=0.5)
         features = _state_to_features(state, context)
         return engine.propose(features)

@@ -14,7 +14,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=7", "ruff"]
 full = [
-    "ami-engine>=0.1",
+    "mdm-engine>=0.1",
     "ops-health-core",
     "dmc-core",
     "evaluation-calibration-core",
