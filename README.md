@@ -5,7 +5,7 @@ E2E integration layer for the **multi-core decision ecosystem**. This repo is **
 ## Role
 
 - **Single-step pipeline**: propose → ops signal → modulate → PacketV2 → report
-- **Invariants (H1–H4)**: schema minor=2 compat, kill-switch dominance, packet trace completeness, fail-closed propagation
+- **Invariants (H1–H3 + fullstack E2E)**: schema minor=2 compat, kill-switch dominance, packet trace completeness; H4 fail-closed propagation (planned)
 - **SSOT**: Context keys and PacketV2 fields follow `decision-schema` PARAMETER_INDEX
 
 ## Cores (dependencies)
@@ -37,14 +37,14 @@ pytest tests/
 
 - `harness/`: `run_one_step`, `packet_builder`, `redaction`
 - `docs/`: ARCHITECTURE, FORMULAS, INTEGRATION_GUIDE, examples
-- `tests/`: invariant H1–H4 + end-to-end smoke
+- `tests/`: invariant H1–H3, fullstack E2E, end-to-end smoke
 
 ## Invariants (harness-level)
 
 - **H1**: Schema minor=2 compat gate (decision-schema 0.2.x)
 - **H2**: Kill-switch dominance: `ops_deny_actions=True` → FinalDecision.allowed=False, action=HOLD
 - **H3**: PacketV2 trace completeness (run_id, step, input, external, mdm, final_action, latency_ms, schema_version)
-- **H4**: Fail-closed propagation: exception path → safe decision + context.fail_closed=True
+- **H4** (planned): Fail-closed propagation: exception path → safe decision + Packet/fail_closed marker
 
 ## License
 
