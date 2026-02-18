@@ -1,3 +1,6 @@
+# Decision Ecosystem — decision-ecosystem-integration-harness
+# Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+# SPDX-License-Identifier: MIT
 """INVARIANT H4: Fail-closed propagation.
 Exception in run_one_step => FinalDecision(allowed=False, action=HOLD) + packet.external["harness.fail_closed"].
 """

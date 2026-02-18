@@ -1,3 +1,6 @@
+# Decision Ecosystem — decision-ecosystem-integration-harness
+# Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+# SPDX-License-Identifier: MIT
 """Build PacketV2 from proposal, final decision, and context (PARAMETER_INDEX-aligned)."""
 
 from __future__ import annotations

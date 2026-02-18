@@ -1,3 +1,6 @@
+# Decision Ecosystem — decision-ecosystem-integration-harness
+# Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+# SPDX-License-Identifier: MIT
 """INVARIANT H3: PacketV2 trace completeness — required fields present and non-empty."""
 
 from decision_schema.packet_v2 import PacketV2

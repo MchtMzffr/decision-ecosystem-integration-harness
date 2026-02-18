@@ -1,3 +1,6 @@
+# Decision Ecosystem — decision-ecosystem-integration-harness
+# Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+# SPDX-License-Identifier: MIT
 """End-to-end smoke: run_one_step returns FinalDecision, PacketV2, and optional Report."""
 
 from harness import run_one_step

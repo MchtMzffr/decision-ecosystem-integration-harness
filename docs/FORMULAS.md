@@ -1,3 +1,8 @@
+<!--
+Decision Ecosystem — decision-ecosystem-integration-harness
+Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+SPDX-License-Identifier: MIT
+-->
 # Formulas (Harness)
 
 Key formulas and checks used in the integration harness.

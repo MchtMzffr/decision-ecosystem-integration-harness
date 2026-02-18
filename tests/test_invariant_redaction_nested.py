@@ -1,3 +1,6 @@
+# Decision Ecosystem — decision-ecosystem-integration-harness
+# Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+# SPDX-License-Identifier: MIT
 """INVARIANT: Nested redaction — secret keys redacted at any depth (dict/list)."""
 
 import pytest

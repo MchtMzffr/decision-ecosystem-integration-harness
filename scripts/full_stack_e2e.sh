@@ -1,3 +1,6 @@
+# Decision Ecosystem — decision-ecosystem-integration-harness
+# Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+# SPDX-License-Identifier: MIT
 #!/usr/bin/env bash
 # Full-stack E2E: venv + install [dev,full] + run fullstack tests.
 # Usage: ./scripts/full_stack_e2e.sh  (from repo root)

@@ -1,3 +1,8 @@
+<!--
+Decision Ecosystem — decision-ecosystem-integration-harness
+Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+SPDX-License-Identifier: MIT
+-->
 # P0 Closure Checklist — CIA v0.2 DONE
 
 Her madde için: **Dosya → Beklenen durum → Çalıştırılacak test → Beklenen çıktı**.

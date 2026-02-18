@@ -1,3 +1,8 @@
+<!--
+Decision Ecosystem — decision-ecosystem-integration-harness
+Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+SPDX-License-Identifier: MIT
+-->
 # decision-ecosystem-integration-harness
 
 E2E integration layer for the **multi-core decision ecosystem**. This repo is **not a core**; it proves that the five cores work together under contract-first, domain-agnostic invariants.

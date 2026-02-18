@@ -1,3 +1,8 @@
+<!--
+Decision Ecosystem — decision-ecosystem-integration-harness
+Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+SPDX-License-Identifier: MIT
+-->
 # P2 DONE — Ecosystem Stabilization Evidence (CIA v0.2)
 
 This sprint stabilized the ecosystem as a contract-first, domain-agnostic decision stack with deterministic safety gates and reproducible integration checks. The contract is pinned to **decision-schema 0.2.x** (`>=0.2,<0.3`), and every core remains **schema-only dependent** (no cross-core imports), with domain examples quarantined under `docs/examples/` and excluded from packaging.

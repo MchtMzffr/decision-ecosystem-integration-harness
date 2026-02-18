@@ -1,3 +1,8 @@
+<!--
+Decision Ecosystem — decision-ecosystem-integration-harness
+Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+SPDX-License-Identifier: MIT
+-->
 # Release Recipe (single-command verification)
 
 Before cutting a release, run the following to verify the integration harness and ecosystem contract.

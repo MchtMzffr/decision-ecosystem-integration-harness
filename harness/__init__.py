@@ -1,3 +1,6 @@
+# Decision Ecosystem — decision-ecosystem-integration-harness
+# Copyright (c) 2026 Mücahit Muzaffer Karafil (MchtMzffr)
+# SPDX-License-Identifier: MIT
 """Integration harness: single-step propose → ops → modulate → PacketV2 → report."""
 
 from harness.packet_builder import build_packet_v2
