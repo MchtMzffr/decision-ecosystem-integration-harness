@@ -8,11 +8,15 @@ Context keys follow decision-schema PARAMETER_INDEX (now_ms, ops_deny_actions, e
 from __future__ import annotations
 
 import time
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+from decision_schema.packet_v2 import PacketV2
 from decision_schema.types import Action, FinalDecision, MismatchInfo, Proposal
 
 from harness.packet_builder import build_packet_v2
+
+if TYPE_CHECKING:
+    from eval_calibration_core.report.model import Report
 
 
 def run_one_step(
@@ -21,7 +25,7 @@ def run_one_step(
     now_ms: int,
     run_id: str = "run-0",
     step: int = 0,
-) -> tuple[FinalDecision, Any, Any]:
+) -> tuple[FinalDecision, PacketV2, Report | None]:
     """
     Run one E2E step: MDM propose → ops update_kill_switch → context merge → DMC modulate → PacketV2 → build_report.
 
