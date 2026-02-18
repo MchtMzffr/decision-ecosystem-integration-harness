@@ -12,12 +12,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "ruff"]
+dev = ["pytest>=7", "ruff", "build"]
 full = [
-    "mdm-engine>=0.1",
-    "ops-health-core",
-    "dmc-core",
-    "evaluation-calibration-core",
+    "mdm-engine>=0.2,<0.3",
+    "ops-health-core>=0.1,<0.2",
+    "dmc-core>=0.1,<0.2",
+    "evaluation-calibration-core>=0.1,<0.2",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "fullstack: requires optional cores (mdm-engine, dmc-core, ops-health-core, evaluation-calibration-core)",
 ]
 
 [tool.setuptools.packages.find]

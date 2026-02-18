@@ -54,3 +54,23 @@ Her madde için: **Dosya → Beklenen durum → Çalıştırılacak test → Bek
 - [ ] P0-D: mdm-engine proposal core domain-free; INV0 code PASSED.
 
 Bu koşullar sağlandığında: **CIA v0.2 DONE**; sıradaki faz: Multi-Proposal + Arbitration.
+
+---
+
+## P0 Closure — CIA v0.2 Release Gate (INV0 + CI-0)
+
+**Verdict:** ✅ **P0 CLOSED / CIA v0.2 DONE (release-grade)**.  
+Integration harness artık deterministik ve public-safe bir "core integration reference" olarak çalışıyor: (1) **CI workflow hygiene** CI-0 invariant'ı ile byte-level kilitlendi (LF-only, CR=0, Unicode kontrol/embedding karakterleri yok, multi-line workflow; `on:`/`jobs:` satır adreslenebilir), ve her PR/push'ta otomatik çalışıyor; (2) **Domain-agnostic public narrative** INV0 ile README+docs (docs/examples hariç) taranıyor ve yasak lexeme setine karşı **0 ihlal** sağlanıyor; (3) Pipeline "propose → ops-health → modulate → PacketV2 → report" akışı harness testleriyle smoke seviyesinde doğrulanıyor. Bu gate sonrası hedef faz: full-stack CI (core repos) + harness'ta `core-only` ve `full-stack` job ayrımı.
+
+**Evidence (raw):**
+- CI workflow: [.github/workflows/ci.yml](https://raw.githubusercontent.com/MchtMzffr/decision-ecosystem-integration-harness/master/.github/workflows/ci.yml)
+- CI-0 invariant: [tests/test_invariant_ci_0_workflow_hygiene.py](https://raw.githubusercontent.com/MchtMzffr/decision-ecosystem-integration-harness/master/tests/test_invariant_ci_0_workflow_hygiene.py)
+- INV0 docs: [tests/test_invariant_0_domain_agnosticism.py](https://raw.githubusercontent.com/MchtMzffr/decision-ecosystem-integration-harness/master/tests/test_invariant_0_domain_agnosticism.py)
+- P0 checklist (this doc): [docs/P0_CLOSURE_CHECKLIST.md](https://raw.githubusercontent.com/MchtMzffr/decision-ecosystem-integration-harness/master/docs/P0_CLOSURE_CHECKLIST.md)
+
+**Gate commands:**
+```bash
+pytest tests/test_invariant_ci_0_workflow_hygiene.py -v   # CI-0
+pytest tests/test_invariant_0_domain_agnosticism.py -v     # INV0 docs
+pytest tests/ -v                                           # full smoke
+```
