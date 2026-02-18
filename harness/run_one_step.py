@@ -28,44 +28,69 @@ def run_one_step(
     Returns:
         (final_decision, packet_v2, report).
         If a core is not installed, that step is skipped or a minimal stub is used (see impl).
+    On any exception (H4 fail-closed): returns FinalDecision(allowed=False, action=HOLD) and packet with fail_closed in external.
     """
     t0 = time.perf_counter()
     context = dict(context)
     context["now_ms"] = now_ms
     context.setdefault("run_id", run_id)
 
-    # 1) Propose (mdm-engine)
-    proposal = _propose(state, context)
+    try:
+        # 1) Propose (mdm-engine)
+        proposal = _propose(state, context)
 
-    # 2) Ops kill switch
-    ops_signal = _update_ops(context, now_ms)
-    context["ops_deny_actions"] = ops_signal.get("ops_deny_actions", False)
-    context["ops_state"] = ops_signal.get("ops_state", "GREEN")
-    context["ops_cooldown_until_ms"] = ops_signal.get("ops_cooldown_until_ms")
+        # 2) Ops kill switch
+        ops_signal = _update_ops(context, now_ms)
+        context["ops_deny_actions"] = ops_signal.get("ops_deny_actions", False)
+        context["ops_state"] = ops_signal.get("ops_state", "GREEN")
+        context["ops_cooldown_until_ms"] = ops_signal.get("ops_cooldown_until_ms")
 
-    # 3) Modulate (DMC)
-    final_decision, mismatch = _modulate(proposal, context)
+        # 3) Modulate (DMC)
+        final_decision, mismatch = _modulate(proposal, context)
 
-    # 4) PacketV2
-    latency_ms = int((time.perf_counter() - t0) * 1000)
-    mismatch_dict = None
-    if mismatch and (mismatch.flags or mismatch.reason_codes):
-        mismatch_dict = {"flags": list(mismatch.flags), "reason_codes": list(mismatch.reason_codes)}
-    packet = build_packet_v2(
-        run_id=run_id,
-        step=step,
-        input_snapshot=state,
-        external_snapshot=context,
-        proposal=proposal,
-        final_decision=final_decision,
-        latency_ms=latency_ms,
-        mismatch=mismatch_dict,
-    )
+        # 4) PacketV2
+        latency_ms = int((time.perf_counter() - t0) * 1000)
+        mismatch_dict = None
+        if mismatch and (mismatch.flags or mismatch.reason_codes):
+            mismatch_dict = {"flags": list(mismatch.flags), "reason_codes": list(mismatch.reason_codes)}
+        packet = build_packet_v2(
+            run_id=run_id,
+            step=step,
+            input_snapshot=state,
+            external_snapshot=context,
+            proposal=proposal,
+            final_decision=final_decision,
+            latency_ms=latency_ms,
+            mismatch=mismatch_dict,
+        )
 
-    # 5) Report (eval-calibration)
-    report = _build_report([packet])
+        # 5) Report (eval-calibration)
+        report = _build_report([packet])
 
-    return final_decision, packet, report
+        return final_decision, packet, report
+
+    except Exception:
+        # H4 fail-closed: safe decision + packet with fail_closed marker
+        latency_ms = int((time.perf_counter() - t0) * 1000)
+        fail_closed_decision = FinalDecision(
+            action=Action.HOLD,
+            allowed=False,
+            reasons=["fail_closed_exception"],
+        )
+        fail_context = dict(context)
+        fail_context["fail_closed"] = True
+        packet = build_packet_v2(
+            run_id=run_id,
+            step=step,
+            input_snapshot=state,
+            external_snapshot=fail_context,
+            proposal=Proposal(action=Action.HOLD, confidence=0.0, reasons=["fail_closed_exception"]),
+            final_decision=fail_closed_decision,
+            latency_ms=latency_ms,
+            mismatch=None,
+        )
+        report = _build_report([packet])
+        return fail_closed_decision, packet, report
 
 
 def _propose(state: dict[str, Any], context: dict[str, Any]) -> Proposal:

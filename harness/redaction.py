@@ -8,19 +8,34 @@ from typing import Any
 REDACT_KEYS = frozenset({"password", "secret", "api_key", "token", "authorization"})
 
 
+def _normalize_key(key: str) -> str:
+    """Normalize for comparison: lower, no dashes/underscores."""
+    return key.lower().replace("-", "").replace("_", "")
+
+
+def _key_matches_redact(key: str, keys_to_redact: frozenset[str]) -> bool:
+    """True if key (case-insensitive, normalized) matches any redact key (substring or exact)."""
+    key_norm = _normalize_key(key)
+    for red in keys_to_redact:
+        if _normalize_key(red) in key_norm:
+            return True
+    return False
+
+
 def redact_dict(d: dict[str, Any], keys_to_redact: frozenset[str] | None = None) -> dict[str, Any]:
     """
     Return a copy of the dict with sensitive keys redacted (value replaced by "[REDACTED]").
-    Recurses one level into nested dicts only (shallow nested redaction).
+    Recurses into nested dicts and into list elements that are dicts (deterministic, no leak).
     """
     keys = keys_to_redact or REDACT_KEYS
     out: dict[str, Any] = {}
     for k, v in d.items():
-        key_lower = k.lower()
-        if any(red in key_lower for red in keys):
+        if _key_matches_redact(k, keys):
             out[k] = "[REDACTED]"
-        elif isinstance(v, dict) and not isinstance(v, type(out)):
+        elif isinstance(v, dict):
             out[k] = redact_dict(dict(v), keys)
+        elif isinstance(v, list):
+            out[k] = [redact_dict(x, keys) if isinstance(x, dict) else x for x in v]
         else:
             out[k] = v
     return out
