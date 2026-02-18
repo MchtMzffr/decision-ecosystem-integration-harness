@@ -16,7 +16,9 @@ concurrency:
 jobs:
   core_only:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
 
@@ -31,11 +33,11 @@ jobs:
           cache: pip
 
       - name: Install test tooling
-        run: pip install -U pip pytest build
+        run: pip install -U pip pytest build || (sleep 15 && pip install -U pip pytest build)
 
       - name: Install decision-schema (pinned, fallback to git)
         run: |
-          pip install "decision-schema>=0.2.2,<0.3" || pip install "git+https://github.com/MchtMzffr/decision-schema.git@v0.2.2"
+          pip install "decision-schema>=0.2.2,<0.3" || (sleep 20 && pip install "decision-schema>=0.2.2,<0.3") || pip install "git+https://github.com/MchtMzffr/decision-schema.git@v0.2.2"
 
       - name: Install harness
         run: pip install -e .
@@ -46,7 +48,9 @@ jobs:
   full_stack:
     runs-on: ubuntu-latest
     needs: core_only
+    timeout-minutes: 25
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
 
@@ -61,18 +65,18 @@ jobs:
           cache: pip
 
       - name: Install test tooling
-        run: pip install -U pip pytest build
+        run: pip install -U pip pytest build || (sleep 15 && pip install -U pip pytest build)
 
       - name: Install decision-schema (pinned, fallback to git)
         run: |
-          pip install "decision-schema>=0.2.2,<0.3" || pip install "git+https://github.com/MchtMzffr/decision-schema.git@v0.2.2"
+          pip install "decision-schema>=0.2.2,<0.3" || (sleep 20 && pip install "decision-schema>=0.2.2,<0.3") || pip install "git+https://github.com/MchtMzffr/decision-schema.git@v0.2.2"
 
       - name: Install full stack (pinned, fallback to git)
         run: |
-          pip install "mdm-engine>=0.2.1,<0.3" || pip install "git+https://github.com/MchtMzffr/mdm-engine.git@v0.2.1"
-          pip install "dmc-core>=0.1,<0.2" || pip install "git+https://github.com/MchtMzffr/decision-modulation-core.git@main"
-          pip install "ops-health-core>=0.1.1,<0.2" || pip install "git+https://github.com/MchtMzffr/ops-health-core.git@v0.1.1"
-          pip install "evaluation-calibration-core>=0.1.1,<0.2" || pip install "git+https://github.com/MchtMzffr/evaluation-calibration-core.git@v0.1.1"
+          pip install "mdm-engine>=0.2.1,<0.3" || (sleep 20 && pip install "mdm-engine>=0.2.1,<0.3") || pip install "git+https://github.com/MchtMzffr/mdm-engine.git@v0.2.1"
+          pip install "dmc-core>=0.1,<0.2" || (sleep 20 && pip install "dmc-core>=0.1,<0.2") || pip install "git+https://github.com/MchtMzffr/decision-modulation-core.git@main"
+          pip install "ops-health-core>=0.1.1,<0.2" || (sleep 20 && pip install "ops-health-core>=0.1.1,<0.2") || pip install "git+https://github.com/MchtMzffr/ops-health-core.git@v0.1.1"
+          pip install "evaluation-calibration-core>=0.1.1,<0.2" || (sleep 20 && pip install "evaluation-calibration-core>=0.1.1,<0.2") || pip install "git+https://github.com/MchtMzffr/evaluation-calibration-core.git@v0.1.1"
 
       - name: Install harness
         run: pip install -e .
