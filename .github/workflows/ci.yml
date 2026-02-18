@@ -35,7 +35,7 @@ jobs:
 
       - name: Install decision-schema (pinned, fallback to git)
         run: |
-          pip install "decision-schema>=0.2,<0.3" || pip install "git+https://github.com/MchtMzffr/decision-schema.git@main"
+          pip install "decision-schema>=0.2.1,<0.3" || pip install "git+https://github.com/MchtMzffr/decision-schema.git@v0.2.1"
 
       - name: Install harness
         run: pip install -e .
@@ -65,14 +65,14 @@ jobs:
 
       - name: Install decision-schema (pinned, fallback to git)
         run: |
-          pip install "decision-schema>=0.2,<0.3" || pip install "git+https://github.com/MchtMzffr/decision-schema.git@main"
+          pip install "decision-schema>=0.2.1,<0.3" || pip install "git+https://github.com/MchtMzffr/decision-schema.git@v0.2.1"
 
       - name: Install full stack (pinned, fallback to git)
         run: |
-          pip install "mdm-engine>=0.2,<0.3" || pip install "git+https://github.com/MchtMzffr/mdm-engine.git@main"
+          pip install "mdm-engine>=0.2.1,<0.3" || pip install "git+https://github.com/MchtMzffr/mdm-engine.git@v0.2.1"
           pip install "dmc-core>=0.1,<0.2" || pip install "git+https://github.com/MchtMzffr/decision-modulation-core.git@main"
-          pip install "ops-health-core>=0.1,<0.2" || pip install "git+https://github.com/MchtMzffr/ops-health-core.git@main"
-          pip install "evaluation-calibration-core>=0.1,<0.2" || pip install "git+https://github.com/MchtMzffr/evaluation-calibration-core.git@main"
+          pip install "ops-health-core>=0.1.1,<0.2" || pip install "git+https://github.com/MchtMzffr/ops-health-core.git@v0.1.1"
+          pip install "evaluation-calibration-core>=0.1.1,<0.2" || pip install "git+https://github.com/MchtMzffr/evaluation-calibration-core.git@v0.1.1"
 
       - name: Install harness
         run: pip install -e .
