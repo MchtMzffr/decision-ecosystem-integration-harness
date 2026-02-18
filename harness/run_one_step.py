@@ -78,7 +78,7 @@ def run_one_step(
             reasons=["fail_closed_exception"],
         )
         fail_context = dict(context)
-        fail_context["fail_closed"] = True
+        fail_context["harness.fail_closed"] = True
         packet = build_packet_v2(
             run_id=run_id,
             step=step,

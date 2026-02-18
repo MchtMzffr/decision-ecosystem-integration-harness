@@ -1,5 +1,5 @@
 """INVARIANT H4: Fail-closed propagation.
-Exception in run_one_step => FinalDecision(allowed=False, action=HOLD) + packet.external.fail_closed.
+Exception in run_one_step => FinalDecision(allowed=False, action=HOLD) + packet.external["harness.fail_closed"].
 """
 
 import sys
@@ -30,7 +30,7 @@ def test_fail_closed_on_exception_proposal(monkeypatch: pytest.MonkeyPatch) -> N
     assert final_decision.allowed is False
     assert final_decision.action == Action.HOLD
     assert "fail_closed_exception" in final_decision.reasons
-    assert packet.external.get("fail_closed") is True
+    assert packet.external.get("harness.fail_closed") is True
     assert packet.final_action["action"] == Action.HOLD.value
     assert packet.final_action["allowed"] is False
 
@@ -49,4 +49,4 @@ def test_fail_closed_on_exception_modulate(monkeypatch: pytest.MonkeyPatch) -> N
 
     assert final_decision.allowed is False
     assert final_decision.action == Action.HOLD
-    assert packet.external.get("fail_closed") is True
+    assert packet.external.get("harness.fail_closed") is True
