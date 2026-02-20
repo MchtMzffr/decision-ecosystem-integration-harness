@@ -35,7 +35,9 @@ def test_inv_trace_reg_1_all_registry_keys_pass_strict_validation() -> None:
             {key: None},
             require_registry_for_prefixes=STRICT_PREFIXES,
         )
-        assert errors == [], f"Registered key {key!r} must validate in strict mode: {errors}"
+        assert errors == [], (
+            f"Registered key {key!r} must validate in strict mode: {errors}"
+        )
 
 
 def test_inv_trace_reg_1_unregistered_trace_key_fails_strict() -> None:
