@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: MIT
 """INVARIANT H3: PacketV2 trace completeness — required fields present and non-empty."""
 
-from decision_schema.packet_v2 import PacketV2
 from decision_schema.types import Action, FinalDecision, Proposal
 
 from harness.packet_builder import build_packet_v2

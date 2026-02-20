@@ -3,9 +3,7 @@
 # SPDX-License-Identifier: MIT
 """INVARIANT: Nested redaction — secret keys redacted at any depth (dict/list)."""
 
-import pytest
-
-from harness.redaction import REDACT_KEYS, redact_dict
+from harness.redaction import redact_dict
 
 
 def test_nested_dict_secret_redacted() -> None:

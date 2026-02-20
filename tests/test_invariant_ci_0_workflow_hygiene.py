@@ -14,7 +14,7 @@ WORKFLOW_DIR = Path(".github/workflows")
 # Unicode control ranges that commonly cause "hidden or bidirectional Unicode text" warnings
 # and can break raw renderers / tooling.
 FORBIDDEN_UNICODE_CODEPOINT_RANGES = [
-    ("\u202A", "\u202E"),  # LRE..RLO (bidi embeddings/overrides)
+    ("\u202a", "\u202e"),  # LRE..RLO (bidi embeddings/overrides)
     ("\u2066", "\u2069"),  # LRI..PDI (isolate controls)
     ("\u2028", "\u2029"),  # line separator / paragraph separator
 ]
@@ -27,7 +27,9 @@ FORBIDDEN_UNICODE_CHARS = [
     "\u2060",  # word joiner
 ]
 
-MIN_EXPECTED_NEWLINES = 10  # sanity: workflows should be multi-line, not a collapsed single line
+MIN_EXPECTED_NEWLINES = (
+    10  # sanity: workflows should be multi-line, not a collapsed single line
+)
 
 
 def _contains_forbidden_unicode(text: str) -> list[str]:
@@ -48,7 +50,11 @@ def test_invariant_ci_0_workflow_hygiene():
     assert WORKFLOW_DIR.exists(), f"{WORKFLOW_DIR} does not exist"
 
     workflow_files = sorted(
-        [p for p in WORKFLOW_DIR.rglob("*") if p.is_file() and p.suffix in {".yml", ".yaml"}]
+        [
+            p
+            for p in WORKFLOW_DIR.rglob("*")
+            if p.is_file() and p.suffix in {".yml", ".yaml"}
+        ]
     )
     assert workflow_files, "No workflow YAML files found under .github/workflows"
 
@@ -65,7 +71,9 @@ def test_invariant_ci_0_workflow_hygiene():
         # 2) Must be multi-line (avoid single-line workflow regressions)
         lf_count = b.count(b"\n")
         if lf_count < MIN_EXPECTED_NEWLINES:
-            failures.append(f"{path}: too few LF newlines (count={lf_count}); possible single-line YAML")
+            failures.append(
+                f"{path}: too few LF newlines (count={lf_count}); possible single-line YAML"
+            )
 
         # 3) Decode as UTF-8 strictly; workflows should be plain UTF-8
         try:
@@ -77,7 +85,9 @@ def test_invariant_ci_0_workflow_hygiene():
         # 4) No hidden/bidi control characters
         hits = _contains_forbidden_unicode(text)
         if hits:
-            failures.append(f"{path}: forbidden Unicode chars present: {', '.join(hits)}")
+            failures.append(
+                f"{path}: forbidden Unicode chars present: {', '.join(hits)}"
+            )
 
         # 5) YAML structural sanity check (cheap, not full YAML parse):
         # Ensure we see top-level keys in separate lines.

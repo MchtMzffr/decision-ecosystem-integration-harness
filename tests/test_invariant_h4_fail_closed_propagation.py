@@ -15,6 +15,7 @@ pytestmark = pytest.mark.fullstack
 def _run_one_step_module():
     """Module that defines run_one_step (for monkeypatching _propose/_modulate)."""
     import harness.run_one_step as _  # noqa: F401
+
     return sys.modules["harness.run_one_step"]
 
 
@@ -28,7 +29,9 @@ def test_fail_closed_on_exception_proposal(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr(_run_one_step_module(), "_propose", raise_in_propose)
     state = {"signal_0": 1}
     context = {"now_ms": 1700000000000}
-    final_decision, packet, _report = run_one_step(state, context, context["now_ms"], run_id="r", step=0)
+    final_decision, packet, _report = run_one_step(
+        state, context, context["now_ms"], run_id="r", step=0
+    )
 
     assert final_decision.allowed is False
     assert final_decision.action == Action.HOLD
@@ -48,7 +51,9 @@ def test_fail_closed_on_exception_modulate(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr(_run_one_step_module(), "_modulate", raise_in_modulate)
     state = {"signal_0": 1}
     context = {"now_ms": 1700000000000}
-    final_decision, packet, _report = run_one_step(state, context, context["now_ms"], run_id="r", step=0)
+    final_decision, packet, _report = run_one_step(
+        state, context, context["now_ms"], run_id="r", step=0
+    )
 
     assert final_decision.allowed is False
     assert final_decision.action == Action.HOLD

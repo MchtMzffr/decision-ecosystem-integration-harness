@@ -32,7 +32,6 @@ def test_kill_switch_dominance_via_dmc() -> None:
     assert final_decision.action == Action.HOLD
 
     # mismatch surface is allowed to evolve; only require evidence of dominance routing.
-    assert (
-        ("ops_deny_actions" in (mismatch.reason_codes or []))
-        or ("ops_health" in (mismatch.flags or []))
+    assert ("ops_deny_actions" in (mismatch.reason_codes or [])) or (
+        "ops_health" in (mismatch.flags or [])
     )

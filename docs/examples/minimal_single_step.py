@@ -11,17 +11,38 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from harness import run_one_step
 
+
 def main() -> None:
-    state = {"signal_0": 0.5, "signal_1": 0.1, "state_scalar_a": 50.0, "state_scalar_b": 10.0}
+    state = {
+        "signal_0": 0.5,
+        "signal_1": 0.1,
+        "state_scalar_a": 50.0,
+        "state_scalar_b": 10.0,
+    }
     context = {}
     now_ms = 1700000000000
-    final_decision, packet, report = run_one_step(state, context, now_ms, run_id="minimal", step=0)
-    print("Final decision:", final_decision.action.value, "allowed:", final_decision.allowed)
-    print("Packet run_id:", packet.run_id, "step:", packet.step, "latency_ms:", packet.latency_ms)
+    final_decision, packet, report = run_one_step(
+        state, context, now_ms, run_id="minimal", step=0
+    )
+    print(
+        "Final decision:",
+        final_decision.action.value,
+        "allowed:",
+        final_decision.allowed,
+    )
+    print(
+        "Packet run_id:",
+        packet.run_id,
+        "step:",
+        packet.step,
+        "latency_ms:",
+        packet.latency_ms,
+    )
     if report:
         print("Report suite:", report.suite_name)
     else:
         print("Report: (eval-calibration-core not installed)")
+
 
 if __name__ == "__main__":
     main()

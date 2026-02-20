@@ -90,7 +90,7 @@ BASE_LINES = [
     "        run: pip install -e .",
     "",
     "      - name: Run full-stack tests",
-    '        run: pytest tests/ -v -m fullstack',
+    "        run: pytest tests/ -v -m fullstack",
     "",
 ]
 
@@ -129,7 +129,11 @@ def _contains_forbidden_unicode(text: str) -> list[str]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--force", action="store_true", help="Rewrite ci.yml even if bytes are identical.")
+    ap.add_argument(
+        "--force",
+        action="store_true",
+        help="Rewrite ci.yml even if bytes are identical.",
+    )
     ap.add_argument(
         "--bust-cache",
         action="store_true",
@@ -157,11 +161,13 @@ def main() -> int:
         else:
             print(f"[rewrite_ci_yml] wrote {CI_PATH} (forced rewrite; bytes identical)")
     else:
-        print(f"[rewrite_ci_yml] no change (already canonical)")
+        print("[rewrite_ci_yml] no change (already canonical)")
 
     # Post-write verify (what CI-0 will enforce)
     new = CI_PATH.read_bytes()
-    print(f"[rewrite_ci_yml] CR={new.count(b'\r')} LF={new.count(b'\n')} bytes={len(new)}")
+    cr_val = new.count(b"\r")
+    lf_val = new.count(b"\n")
+    print(f"[rewrite_ci_yml] CR={cr_val} LF={lf_val} bytes={len(new)}")
     return 0
 
 

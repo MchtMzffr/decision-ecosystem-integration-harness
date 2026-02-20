@@ -25,7 +25,9 @@ def _key_matches_redact(key: str, keys_to_redact: frozenset[str]) -> bool:
     return False
 
 
-def redact_dict(d: dict[str, Any], keys_to_redact: frozenset[str] | None = None) -> dict[str, Any]:
+def redact_dict(
+    d: dict[str, Any], keys_to_redact: frozenset[str] | None = None
+) -> dict[str, Any]:
     """
     Return a copy of the dict with sensitive keys redacted (value replaced by "[REDACTED]").
     Recurses into nested dicts and into list elements that are dicts (deterministic, no leak).

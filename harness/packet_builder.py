@@ -5,11 +5,10 @@
 
 from __future__ import annotations
 
-import time
 from typing import Any
 
 from decision_schema.packet_v2 import PacketV2
-from decision_schema.types import Action, FinalDecision, Proposal
+from decision_schema.types import FinalDecision, Proposal
 
 from harness.redaction import redact_dict
 
@@ -31,7 +30,9 @@ def build_packet_v2(
     Input/external are redacted by default for safe tracing.
     """
     input_ = redact_dict(input_snapshot) if redact_input else dict(input_snapshot)
-    external = redact_dict(external_snapshot) if redact_external else dict(external_snapshot)
+    external = (
+        redact_dict(external_snapshot) if redact_external else dict(external_snapshot)
+    )
     mdm = _proposal_to_mdm_dict(proposal)
     final_action = _final_decision_to_dict(final_decision)
     return PacketV2(

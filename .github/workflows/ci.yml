@@ -3,8 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
     branches: [main]
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -14,6 +16,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  secret_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   core_only:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -26,6 +38,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check LICENSE (INV-LIC-1)
+        run: test -f LICENSE || { echo "Missing root LICENSE"; exit 1; }
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -33,7 +48,13 @@ jobs:
           cache: pip
 
       - name: Install test tooling
-        run: pip install -U pip pytest build || (sleep 15 && pip install -U pip pytest build)
+        run: pip install -U pip pytest build pytest-json-report pytest-cov ruff || (sleep 15 && pip install -U pip pytest build pytest-json-report pytest-cov ruff)
+
+      - name: Ruff check
+        run: ruff check .
+
+      - name: Ruff format check
+        run: ruff format --check .
 
       - name: Install decision-schema (pinned, fallback to git)
         run: |
@@ -43,7 +64,28 @@ jobs:
         run: pip install -e .
 
       - name: Run core-only tests
-        run: pytest tests/ -v -m "not fullstack"
+        run: pytest tests/ -v -m "not fullstack" --json-report --json-report-file=pytest-report.json --cov=. --cov-report=term-missing --no-cov-on-fail
+
+      - name: Upload pytest report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report-${{ matrix.python-version }}
+          path: pytest-report.json
+
+      - name: Write test summary
+        run: |
+          python - <<'PY'
+          import json, os
+          r = json.load(open("pytest-report.json", "r", encoding="utf-8"))
+          s = r.get("summary", {})
+          passed = s.get("passed", 0); failed = s.get("failed", 0); skipped = s.get("skipped", 0); total = s.get("total", 0)
+          line = f"pytest: total={total} passed={passed} failed={failed} skipped={skipped}"
+          print(line)
+          sp = os.environ.get("GITHUB_STEP_SUMMARY")
+          if sp:
+              with open(sp, "a", encoding="utf-8") as f:
+                  f.write(line + "\n")
+          PY
 
   full_stack:
     runs-on: ubuntu-latest
@@ -58,6 +100,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check LICENSE (INV-LIC-1)
+        run: test -f LICENSE || { echo "Missing root LICENSE"; exit 1; }
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -65,7 +110,13 @@ jobs:
           cache: pip
 
       - name: Install test tooling
-        run: pip install -U pip pytest build || (sleep 15 && pip install -U pip pytest build)
+        run: pip install -U pip pytest build ruff || (sleep 15 && pip install -U pip pytest build ruff)
+
+      - name: Ruff check
+        run: ruff check .
+
+      - name: Ruff format check
+        run: ruff format --check .
 
       - name: Install decision-schema (pinned, fallback to git)
         run: |
@@ -74,7 +125,7 @@ jobs:
       - name: Install full stack (pinned, fallback to git)
         run: |
           pip install "mdm-engine>=0.2.1,<0.3" || (sleep 20 && pip install "mdm-engine>=0.2.1,<0.3") || pip install "git+https://github.com/MchtMzffr/mdm-engine.git@v0.2.1"
-          pip install "dmc-core>=0.1,<0.2" || (sleep 20 && pip install "dmc-core>=0.1,<0.2") || pip install "git+https://github.com/MchtMzffr/decision-modulation-core.git@main"
+          pip install "dmc-core>=0.1.1,<0.2" || (sleep 20 && pip install "dmc-core>=0.1.1,<0.2") || pip install "git+https://github.com/MchtMzffr/decision-modulation-core.git@v0.1.1"
           pip install "ops-health-core>=0.1.1,<0.2" || (sleep 20 && pip install "ops-health-core>=0.1.1,<0.2") || pip install "git+https://github.com/MchtMzffr/ops-health-core.git@v0.1.1"
           pip install "evaluation-calibration-core>=0.1.1,<0.2" || (sleep 20 && pip install "evaluation-calibration-core>=0.1.1,<0.2") || pip install "git+https://github.com/MchtMzffr/evaluation-calibration-core.git@v0.1.1"
 
@@ -82,4 +133,4 @@ jobs:
         run: pip install -e .
 
       - name: Run full-stack tests
-        run: pytest tests/ -v -m fullstack
+        run: pytest tests/ -v -m fullstack --cov=. --cov-report=term-missing --no-cov-on-fail

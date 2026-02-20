@@ -12,11 +12,30 @@ import re
 from pathlib import Path
 
 FORBIDDEN_TERMS = {
-    "trade", "trading", "trader", "market", "orderbook",
-    "bid", "ask", "quote", "fill", "exchange", "portfolio",
-    "pnl", "slippage", "spread", "liquidity", "inventory",
-    "exposure", "drawdown", "flatten", "cancel_all",
-    "mid", "imbalance", "depth", "spread_bps",
+    "trade",
+    "trading",
+    "trader",
+    "market",
+    "orderbook",
+    "bid",
+    "ask",
+    "quote",
+    "fill",
+    "exchange",
+    "portfolio",
+    "pnl",
+    "slippage",
+    "spread",
+    "liquidity",
+    "inventory",
+    "exposure",
+    "drawdown",
+    "flatten",
+    "cancel_all",
+    "mid",
+    "imbalance",
+    "depth",
+    "spread_bps",
 }
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
