@@ -25,7 +25,7 @@ E2E integration layer for the **multi-core decision ecosystem**. This repo is **
 
 ## Schema dependency
 
-- **decision-schema**: `>=0.2,<0.3` (compat: `min_minor=2`, `max_minor=2`)
+- **decision-schema**: `>=0.2.2,<0.3` (compat: `min_minor=2`, `max_minor=2`)
 
 ## Quick start
 
