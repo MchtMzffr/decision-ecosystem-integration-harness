@@ -31,6 +31,8 @@ def run_one_step(
 ) -> tuple[FinalDecision, PacketV2, Report | None]:
     """
     Run one E2E step: MDM propose → ops update_kill_switch → context merge → DMC modulate → PacketV2 → build_report.
+    Execution (execution-orchestration-core) is not in this pipeline; the caller may run execute()
+    separately with final_decision and an executor callable.
 
     Returns:
         (final_decision, packet_v2, report).
@@ -130,7 +132,10 @@ def _state_to_features(
 
 
 def _update_ops(context: dict[str, Any], now_ms: int) -> dict[str, Any]:
-    """Ops kill switch signal; merge into context-style dict."""
+    """Ops kill switch signal; merge into context-style dict.
+    OpsState is filled from context: error_timestamps, rate_limit_timestamps,
+    latency_timestamps, reconnect_timestamps, ops_cooldown_until_ms (see PARAMETER_INDEX).
+    """
     try:
         from ops_health_core.kill_switch import update_kill_switch
         from ops_health_core.model import OpsPolicy, OpsState
@@ -139,6 +144,8 @@ def _update_ops(context: dict[str, Any], now_ms: int) -> dict[str, Any]:
         ops_state = OpsState(
             error_timestamps=context.get("error_timestamps", []),
             rate_limit_timestamps=context.get("rate_limit_timestamps", []),
+            latency_timestamps=context.get("latency_timestamps", []),
+            reconnect_timestamps=context.get("reconnect_timestamps", []),
             cooldown_until_ms=context.get("ops_cooldown_until_ms"),
         )
         signal = update_kill_switch(ops_state, policy, now_ms)
@@ -186,6 +193,6 @@ def _attach_explanation(report: Any, packet: PacketV2) -> None:
         from explainability_audit_core import explain_from_packet
 
         artifact = explain_from_packet(packet)
-        setattr(report, "explanation", artifact.to_dict())
+        report.explanation = artifact.to_dict()
     except ImportError:
-        setattr(report, "explanation", None)
+        report.explanation = None
