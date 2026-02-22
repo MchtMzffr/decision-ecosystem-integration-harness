@@ -76,6 +76,7 @@ def run_one_step(
 
         # 5) Report (eval-calibration)
         report = _build_report([packet])
+        _attach_explanation(report, packet)
 
         return final_decision, packet, report
 
@@ -102,6 +103,7 @@ def run_one_step(
             mismatch=None,
         )
         report = _build_report([packet])
+        _attach_explanation(report, packet)
         return fail_closed_decision, packet, report
 
 
@@ -174,3 +176,16 @@ def _build_report(packets: list) -> Any:
         return build_report(packets, suite_name="harness", expected_schema_minor=2)
     except ImportError:
         return None
+
+
+def _attach_explanation(report: Any, packet: PacketV2) -> None:
+    """If explainability-audit-core is installed, set report.explanation from PacketV2 (optional)."""
+    if report is None:
+        return
+    try:
+        from explainability_audit_core import explain_from_packet
+
+        artifact = explain_from_packet(packet)
+        setattr(report, "explanation", artifact.to_dict())
+    except ImportError:
+        setattr(report, "explanation", None)
