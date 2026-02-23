@@ -64,8 +64,11 @@ def _check_body_size(request: Request, max_bytes: int) -> JSONResponse | None:
     return None
 
 
-def _rate_limit(client_host: str) -> bool:
-    """INV-GW-RL-1: True if under limit; False if over (caller should return 429)."""
+def _rate_limit(client_host: str) -> tuple[bool, int, int, int]:
+    """
+    INV-GW-RL-1: Rate limit check. Returns (allowed, limit, remaining, retry_after_sec).
+    When allowed=False: remaining=0, retry_after_sec = seconds until window slot frees.
+    """
     now = time.monotonic()
     window_sec = int(os.environ.get("DECISION_GATEWAY_RATE_WINDOW_SEC", str(_RATE_WINDOW_SEC)))
     max_req = int(os.environ.get("DECISION_GATEWAY_RATE_MAX", str(_RATE_MAX_REQUESTS)))
@@ -74,7 +77,16 @@ def _rate_limit(client_host: str) -> bool:
     cutoff = now - window_sec
     while lst and lst[0] < cutoff:
         lst.pop(0)
-    return len(lst) <= max_req
+    n = len(lst)
+    allowed = n <= max_req
+    if allowed:
+        remaining = max(0, max_req - n)
+        retry_after_sec = 0
+    else:
+        remaining = 0
+        # Seconds until oldest request in window expires
+        retry_after_sec = max(1, int(lst[0] + window_sec - now))
+    return (allowed, max_req, remaining, retry_after_sec)
 
 
 def create_app(
@@ -114,8 +126,17 @@ def create_app(
                 return size_resp
             client = request.client
             ip = client.host if client else "unknown"
-            if not _rate_limit(ip):
-                return JSONResponse(status_code=429, content={"error": "too_many_requests", "detail": "rate limit exceeded"})
+            allowed, limit, remaining, retry_after_sec = _rate_limit(ip)
+            if not allowed:
+                resp = JSONResponse(
+                    status_code=429,
+                    content={"error": "too_many_requests", "detail": "rate limit exceeded"},
+                )
+                resp.headers["Retry-After"] = str(retry_after_sec)
+                resp.headers["X-RateLimit-Limit"] = str(limit)
+                resp.headers["X-RateLimit-Remaining"] = "0"
+                resp.headers["X-RateLimit-Reset"] = str(retry_after_sec)
+                return resp
         return await call_next(request)
 
     def _run_and_respond(

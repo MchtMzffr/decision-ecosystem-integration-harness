@@ -53,6 +53,10 @@ def test_inv_gw_rl_1_rate_limit_429() -> None:
         assert r2.status_code == 200
         assert r3.status_code == 429
         assert (r3.json() or {}).get("error") == "too_many_requests"
+        # P0.6: 429 includes Retry-After and X-RateLimit-* headers
+        assert "Retry-After" in r3.headers
+        assert r3.headers.get("X-RateLimit-Limit") == "2"
+        assert r3.headers.get("X-RateLimit-Remaining") == "0"
     finally:
         if prev is not None:
             os.environ["DECISION_GATEWAY_RATE_MAX"] = prev
