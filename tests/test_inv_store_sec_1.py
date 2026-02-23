@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: MIT
 """INV-STORE-SEC-1 and INV-STORE-NO-PII-1: Store redaction gate and secret pattern refusal."""
 
+from pathlib import Path
+
 from decision_schema.packet_v2 import PacketV2
 
 from harness.platform.store import clear_memory_buffer, get_memory_buffer, save
@@ -60,3 +62,22 @@ def test_inv_store_no_pii_1_token_pattern_fails() -> None:
     buf = get_memory_buffer()
     assert len(buf) == 0
     clear_memory_buffer()
+
+
+def test_inv_store_path_1_disallow_absolute_by_default() -> None:
+    """Absolute file path without allow_absolute_path raises (INV-STORE-PATH-1)."""
+    import sys
+    import pytest
+    packet = PacketV2(
+        run_id="r1",
+        step=0,
+        input={},
+        external={"harness.redaction_applied": True},
+        mdm={"action": "HOLD"},
+        final_action={"action": "HOLD", "allowed": True, "reasons": []},
+        latency_ms=1,
+    )
+    abs_path = "C:/allowed_absolute_test/audit.jsonl" if sys.platform == "win32" else "/tmp/allowed_absolute_test/audit.jsonl"
+    assert Path(abs_path).is_absolute()
+    with pytest.raises(ValueError, match="INV-STORE-PATH-1"):
+        save(packet, report=None, backend="file", path=abs_path, allow_absolute_path=False)

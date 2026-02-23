@@ -5,6 +5,7 @@
 Store: persist PacketV2, Report, optional Explanation.
 INV-STORE-SEC-1: Never write when harness.redaction_applied != True (fail-closed).
 INV-STORE-NO-PII-1: Refuse write if payload hits secret/PII patterns.
+INV-STORE-PATH-1: Default disallow absolute path; only allow under cwd or with allow_absolute_path=True.
 """
 
 from __future__ import annotations
@@ -48,12 +49,14 @@ def save(
     explanation: Any | None = None,
     backend: str = "memory",
     path: str | Path | None = None,
+    allow_absolute_path: bool = False,
     _memory_buffer: list[dict[str, Any]] | None = None,
 ) -> None:
     """
     Persist one step. backend=off or empty => no-op.
     INV-STORE-SEC-1: If packet.external has no harness.redaction_applied=True, do not write (fail-closed).
     INV-STORE-NO-PII-1: If payload matches secret/PII patterns, do not write.
+    INV-STORE-PATH-1: If backend=file and path is absolute and allow_absolute_path is False, do not write (raise ValueError).
     """
     if backend == "off" or not backend:
         return
@@ -77,6 +80,9 @@ def save(
         if path is None:
             path = os.environ.get("DECISION_STORE_PATH", "decision_audit.jsonl")
         p = Path(path)
+        if p.is_absolute() and not allow_absolute_path:
+            raise ValueError("INV-STORE-PATH-1: absolute store path not allowed by default; set allow_absolute_path=True to override")
+        p = p.resolve()
         p.parent.mkdir(parents=True, exist_ok=True)
         entry = dict(payload)
         if report is not None and hasattr(report, "suite_name"):

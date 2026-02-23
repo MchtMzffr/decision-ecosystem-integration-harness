@@ -5,12 +5,14 @@
 Gateway: HTTP API for the decision pipeline. Orchestration only; pipeline SSOT is run_one_step (INV-PLAT-ISOLATION-1).
 POST /decide (and /decision legacy), GET/POST /control. INV-GW-FAILCLOSED-1: exception => allowed=false + packet trace.
 INV-DEPS-OPTIONAL-1: server deps only with [gateway] or [server] extra.
+INV-GW-SIZE-1: Body size upper bound (default 256KB) => 413. INV-GW-RL-1: In-memory per-IP rate limit => 429.
 """
 
 from __future__ import annotations
 
 import os
 import time
+from collections import defaultdict
 from typing import Any
 
 try:
@@ -19,6 +21,19 @@ try:
 except ImportError as e:
     FastAPI = None  # type: ignore
     _gateway_import_error = e
+
+# INV-GW-SIZE-1: default max body size (bytes)
+_DEFAULT_MAX_BODY_BYTES = 256 * 1024
+
+# INV-GW-RL-1: in-memory rate limit (per IP), (window_sec, max_requests)
+_rate_window: dict[str, list[float]] = defaultdict(list)
+_RATE_WINDOW_SEC = 60
+_RATE_MAX_REQUESTS = 100
+
+
+def _clear_rate_limit_for_test() -> None:
+    """Clear rate limit state (for tests only)."""
+    _rate_window.clear()
 
 
 def _control_enabled() -> bool:
@@ -37,17 +52,44 @@ def _control_token_ok(request: Request) -> bool:
     return token == expected and bool(token)
 
 
+def _check_body_size(request: Request, max_bytes: int) -> JSONResponse | None:
+    """INV-GW-SIZE-1: Return 413 if Content-Length exceeds max_bytes."""
+    cl = request.headers.get("content-length")
+    if cl is not None:
+        try:
+            if int(cl) > max_bytes:
+                return JSONResponse(status_code=413, content={"error": "payload_too_large", "detail": f"max {max_bytes} bytes"})
+        except ValueError:
+            pass
+    return None
+
+
+def _rate_limit(client_host: str) -> bool:
+    """INV-GW-RL-1: True if under limit; False if over (caller should return 429)."""
+    now = time.monotonic()
+    window_sec = int(os.environ.get("DECISION_GATEWAY_RATE_WINDOW_SEC", str(_RATE_WINDOW_SEC)))
+    max_req = int(os.environ.get("DECISION_GATEWAY_RATE_MAX", str(_RATE_MAX_REQUESTS)))
+    lst = _rate_window[client_host]
+    lst.append(now)
+    cutoff = now - window_sec
+    while lst and lst[0] < cutoff:
+        lst.pop(0)
+    return len(lst) <= max_req
+
+
 def create_app(
     store_backend: str = "memory",
     store_path: str | None = None,
     use_catalog: bool = True,
     use_control_in_context: bool = True,
     enable_control_endpoints: bool | None = None,
+    max_body_bytes: int | None = None,
 ) -> Any:
     """
     Create FastAPI app. Requires pip install .[gateway] (INV-DEPS-OPTIONAL-1).
     INV-GW-CTRL-LOCK-1: Control endpoints disabled by default (enable_control_endpoints or DECISION_GATEWAY_ENABLE_CONTROL).
     INV-GW-AUTH-1: When enabled, DECISION_CONTROL_TOKEN header required for GET/POST /control.
+    INV-GW-SIZE-1: Request body over max_body_bytes => 413. INV-GW-RL-1: Per-IP rate limit => 429.
     """
     if FastAPI is None:
         raise ImportError(
@@ -60,7 +102,21 @@ def create_app(
     from harness.run_one_step import run_one_step
 
     control_enabled = enable_control_endpoints if enable_control_endpoints is not None else _control_enabled()
+    body_limit = max_body_bytes if max_body_bytes is not None else _DEFAULT_MAX_BODY_BYTES
     app = FastAPI(title="Decision Ecosystem Gateway", version="0.1.0")
+
+    @app.middleware("http")
+    async def gateway_abuse_middleware(request: Request, call_next):  # noqa: ANN001
+        """INV-GW-SIZE-1 and INV-GW-RL-1."""
+        if request.url.path in ("/decide", "/decision"):
+            size_resp = _check_body_size(request, body_limit)
+            if size_resp is not None:
+                return size_resp
+            client = request.client
+            ip = client.host if client else "unknown"
+            if not _rate_limit(ip):
+                return JSONResponse(status_code=429, content={"error": "too_many_requests", "detail": "rate limit exceeded"})
+        return await call_next(request)
 
     def _run_and_respond(
         state: dict[str, Any],
