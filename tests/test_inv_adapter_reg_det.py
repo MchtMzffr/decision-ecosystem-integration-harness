@@ -11,8 +11,12 @@ from harness.platform.adapters.base import BaseAdapter
 
 # SSOT: adapter names that must be in registry (INV-ADAPTER-REG-1).
 _ADAPTER_NAMES = (
+    "example_domain_agent_tool_use",
+    "example_domain_content_moderation",
     "example_domain_lending",
+    "example_domain_ops_automation",
     "example_domain_scheduling",
+    "example_domain_triage",
     "example_domain_trading",
 )
 
