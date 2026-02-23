@@ -19,6 +19,14 @@ full = [
     "dmc-core>=0.1,<0.2",
     "evaluation-calibration-core>=0.1,<0.2",
 ]
+gateway = [
+    "fastapi>=0.100",
+    "uvicorn[standard]>=0.22",
+]
+server = [
+    "fastapi>=0.100",
+    "uvicorn[standard]>=0.22",
+]
 
 [tool.pytest.ini_options]
 markers = [

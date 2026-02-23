@@ -33,6 +33,8 @@ def build_packet_v2(
     external = (
         redact_dict(external_snapshot) if redact_external else dict(external_snapshot)
     )
+    if redact_input and redact_external:
+        external["harness.redaction_applied"] = True
     mdm = _proposal_to_mdm_dict(proposal)
     final_action = _final_decision_to_dict(final_decision)
     return PacketV2(
