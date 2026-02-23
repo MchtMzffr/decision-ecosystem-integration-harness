@@ -44,12 +44,26 @@ __all__ = [
 
 
 def create_app(*args: object, **kwargs: object):  # noqa: ANN001, ANN002
-    """Create FastAPI app; requires pip install .[gateway] (INV-DEPS-OPTIONAL-1)."""
+    """Create FastAPI app; requires pip install .[gateway] (INV-DEPS-OPTIONAL-1). Deprecated (INV-API-SURFACE-1): use harness.platform.gateway.create_app."""
+    import warnings
+    warnings.warn(
+        "from harness import create_app is deprecated (deprecated_in: 0.2, remove_in: 1.0). "
+        "Use: from harness.platform.gateway import create_app. See DEPRECATION_POLICY.md (INV-API-SURFACE-1).",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     from harness.platform.gateway import create_app as _create_app
     return _create_app(*args, **kwargs)
 
 
 def serve(*args: object, **kwargs: object):  # noqa: ANN001, ANN002
-    """Run gateway with uvicorn; requires pip install .[gateway] (INV-DEPS-OPTIONAL-1)."""
+    """Run gateway with uvicorn; requires pip install .[gateway] (INV-DEPS-OPTIONAL-1). Deprecated (INV-API-SURFACE-1): use harness.platform.gateway.serve."""
+    import warnings
+    warnings.warn(
+        "from harness import serve is deprecated (deprecated_in: 0.2, remove_in: 1.0). "
+        "Use: from harness.platform.gateway import serve (or python -m harness). See DEPRECATION_POLICY.md (INV-API-SURFACE-1).",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     from harness.platform.gateway import serve as _serve
     return _serve(*args, **kwargs)
