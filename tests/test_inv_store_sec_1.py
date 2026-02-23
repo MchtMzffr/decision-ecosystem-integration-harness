@@ -68,6 +68,7 @@ def test_inv_store_path_1_disallow_absolute_by_default() -> None:
     """Absolute file path without allow_absolute_path raises (INV-STORE-PATH-1)."""
     import sys
     import pytest
+
     packet = PacketV2(
         run_id="r1",
         step=0,
@@ -77,7 +78,17 @@ def test_inv_store_path_1_disallow_absolute_by_default() -> None:
         final_action={"action": "HOLD", "allowed": True, "reasons": []},
         latency_ms=1,
     )
-    abs_path = "C:/allowed_absolute_test/audit.jsonl" if sys.platform == "win32" else "/tmp/allowed_absolute_test/audit.jsonl"
+    abs_path = (
+        "C:/allowed_absolute_test/audit.jsonl"
+        if sys.platform == "win32"
+        else "/tmp/allowed_absolute_test/audit.jsonl"
+    )
     assert Path(abs_path).is_absolute()
     with pytest.raises(ValueError, match="INV-STORE-PATH-1"):
-        save(packet, report=None, backend="file", path=abs_path, allow_absolute_path=False)
+        save(
+            packet,
+            report=None,
+            backend="file",
+            path=abs_path,
+            allow_absolute_path=False,
+        )

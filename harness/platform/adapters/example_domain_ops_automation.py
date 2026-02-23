@@ -18,7 +18,9 @@ from harness.platform.adapters.base import BaseAdapter
 class ExampleDomainOpsAutomationAdapter(BaseAdapter):
     """Example domain adapter: ops automation (allow/deny). Not for production use."""
 
-    def to_state_context(self, domain_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    def to_state_context(
+        self, domain_input: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Example: operation, target, params -> state; guards config -> context."""
         state = {
             "operation": domain_input.get("operation", ""),

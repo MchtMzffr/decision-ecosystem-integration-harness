@@ -18,7 +18,9 @@ from harness.platform.adapters.base import BaseAdapter
 class ExampleDomainLendingAdapter(BaseAdapter):
     """Example domain adapter: lending (approve/deny/limit). Not for production use."""
 
-    def to_state_context(self, domain_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    def to_state_context(
+        self, domain_input: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Example: income, debt, amount_requested -> state; tenant/limits -> context."""
         state = {
             "income": domain_input.get("income", 0),
@@ -38,6 +40,8 @@ class ExampleDomainLendingAdapter(BaseAdapter):
     ) -> dict[str, Any]:
         """Example: FinalDecision -> result (approve|deny), limit, reasons."""
         return {
-            "result": "approve" if final_decision.allowed and final_decision.action.value == "ACT" else "deny",
+            "result": "approve"
+            if final_decision.allowed and final_decision.action.value == "ACT"
+            else "deny",
             "reasons": list(final_decision.reasons),
         }

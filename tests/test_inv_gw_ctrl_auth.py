@@ -17,6 +17,7 @@ def test_inv_gw_ctrl_lock_1_default_disabled() -> None:
     env_token = os.environ.pop("DECISION_CONTROL_TOKEN", None)
     try:
         from harness.platform.gateway import create_app
+
         app = create_app(store_backend="off", enable_control_endpoints=False)
         client = TestClient(app)
         r_get = client.get("/control")
@@ -37,13 +38,20 @@ def test_inv_gw_auth_1_token_required() -> None:
     try:
         os.environ["DECISION_CONTROL_TOKEN"] = "secret123"
         from harness.platform.gateway import create_app
+
         app = create_app(store_backend="off", enable_control_endpoints=True)
         client = TestClient(app)
         r_no_token = client.get("/control")
         assert r_no_token.status_code == 401
-        r_with_token = client.get("/control", headers={"X-Decision-Control-Token": "secret123"})
+        r_with_token = client.get(
+            "/control", headers={"X-Decision-Control-Token": "secret123"}
+        )
         assert r_with_token.status_code == 200
-        r_post = client.post("/control", headers={"X-Decision-Control-Token": "secret123"}, json={"ops_state": "GREEN"})
+        r_post = client.post(
+            "/control",
+            headers={"X-Decision-Control-Token": "secret123"},
+            json={"ops_state": "GREEN"},
+        )
         assert r_post.status_code == 200
     finally:
         if env_control is not None:

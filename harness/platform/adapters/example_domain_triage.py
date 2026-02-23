@@ -18,7 +18,9 @@ from harness.platform.adapters.base import BaseAdapter
 class ExampleDomainTriageAdapter(BaseAdapter):
     """Example domain adapter: triage (priority, escalate, human review). Not for production use."""
 
-    def to_state_context(self, domain_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    def to_state_context(
+        self, domain_input: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Example: ticket_id, summary, category -> state; context optional."""
         state = {
             "ticket_id": domain_input.get("ticket_id", ""),

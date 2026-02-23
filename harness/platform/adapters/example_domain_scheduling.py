@@ -18,7 +18,9 @@ from harness.platform.adapters.base import BaseAdapter
 class ExampleDomainSchedulingAdapter(BaseAdapter):
     """Example domain adapter: scheduling (slot availability). Not for production use."""
 
-    def to_state_context(self, domain_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    def to_state_context(
+        self, domain_input: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Example: date, duration_min, resource_id -> state; context empty or tenant."""
         state = {
             "date": domain_input.get("date", ""),

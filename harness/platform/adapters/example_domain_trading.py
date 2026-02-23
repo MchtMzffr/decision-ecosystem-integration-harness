@@ -18,7 +18,9 @@ from harness.platform.adapters.base import BaseAdapter
 class ExampleDomainTradingAdapter(BaseAdapter):
     """Example domain adapter: trading (buy/sell/hold). Not for production use."""
 
-    def to_state_context(self, domain_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    def to_state_context(
+        self, domain_input: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Example: price, position, daily_pnl -> state; context optional."""
         state = {
             "price": domain_input.get("price", 0.0),
@@ -36,6 +38,8 @@ class ExampleDomainTradingAdapter(BaseAdapter):
     ) -> dict[str, Any]:
         """Example: FinalDecision -> action (buy|sell|hold), reasons."""
         return {
-            "action": "hold" if not final_decision.allowed else final_decision.action.value.lower(),
+            "action": "hold"
+            if not final_decision.allowed
+            else final_decision.action.value.lower(),
             "reasons": list(final_decision.reasons),
         }

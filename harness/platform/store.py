@@ -71,7 +71,9 @@ def save(
         if report is not None and hasattr(report, "suite_name"):
             entry["report_suite"] = getattr(report, "suite_name", None)
         if report is not None and hasattr(report, "contract_matrix_check"):
-            entry["contract_ok"] = (report.contract_matrix_check or {}).get("compatible") is True
+            entry["contract_ok"] = (report.contract_matrix_check or {}).get(
+                "compatible"
+            ) is True
         if explanation is not None and hasattr(explanation, "to_dict"):
             entry["explanation"] = explanation.to_dict()
         buf.append(entry)
@@ -81,7 +83,9 @@ def save(
             path = os.environ.get("DECISION_STORE_PATH", "decision_audit.jsonl")
         p = Path(path)
         if p.is_absolute() and not allow_absolute_path:
-            raise ValueError("INV-STORE-PATH-1: absolute store path not allowed by default; set allow_absolute_path=True to override")
+            raise ValueError(
+                "INV-STORE-PATH-1: absolute store path not allowed by default; set allow_absolute_path=True to override"
+            )
         p = p.resolve()
         p.parent.mkdir(parents=True, exist_ok=True)
         entry = dict(payload)

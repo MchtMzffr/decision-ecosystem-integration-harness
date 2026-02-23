@@ -3,20 +3,14 @@
 # SPDX-License-Identifier: MIT
 """Tests for platform: catalog, store, control."""
 
-import os
-
-import pytest
-
 from harness import (
     clear_memory_buffer,
     clear_ops_override,
     get_context_overrides,
     get_memory_buffer,
     get_ops_state,
-    get_policy_defaults,
     merge_context,
     set_green,
-    set_ops_state,
     set_red,
     store_save,
 )

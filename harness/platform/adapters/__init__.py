@@ -7,11 +7,19 @@ INV-ADAPTER-DOMAIN-LEAK-1: Adapter names and docs carry "Example domain" label; 
 """
 
 from harness.platform.adapters.base import BaseAdapter
-from harness.platform.adapters.example_domain_agent_tool_use import ExampleDomainAgentToolUseAdapter
-from harness.platform.adapters.example_domain_content_moderation import ExampleDomainContentModerationAdapter
+from harness.platform.adapters.example_domain_agent_tool_use import (
+    ExampleDomainAgentToolUseAdapter,
+)
+from harness.platform.adapters.example_domain_content_moderation import (
+    ExampleDomainContentModerationAdapter,
+)
 from harness.platform.adapters.example_domain_lending import ExampleDomainLendingAdapter
-from harness.platform.adapters.example_domain_ops_automation import ExampleDomainOpsAutomationAdapter
-from harness.platform.adapters.example_domain_scheduling import ExampleDomainSchedulingAdapter
+from harness.platform.adapters.example_domain_ops_automation import (
+    ExampleDomainOpsAutomationAdapter,
+)
+from harness.platform.adapters.example_domain_scheduling import (
+    ExampleDomainSchedulingAdapter,
+)
 from harness.platform.adapters.example_domain_triage import ExampleDomainTriageAdapter
 from harness.platform.adapters.example_domain_trading import ExampleDomainTradingAdapter
 

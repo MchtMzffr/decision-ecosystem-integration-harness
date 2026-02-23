@@ -18,7 +18,9 @@ def get_context_overrides(tenant_id: str | None = None) -> dict[str, Any]:
     if os.environ.get("DECISION_OPS_STATE"):
         overrides["ops_state"] = os.environ.get("DECISION_OPS_STATE", "GREEN").strip()
     if tenant_id and os.environ.get(f"DECISION_TENANT_{tenant_id}_OPS_STATE"):
-        overrides["ops_state"] = os.environ.get(f"DECISION_TENANT_{tenant_id}_OPS_STATE", "GREEN").strip()
+        overrides["ops_state"] = os.environ.get(
+            f"DECISION_TENANT_{tenant_id}_OPS_STATE", "GREEN"
+        ).strip()
     return overrides
 
 
@@ -34,7 +36,9 @@ def get_policy_defaults() -> dict[str, Any]:
     return defaults
 
 
-def merge_context(base: dict[str, Any], overrides: dict[str, Any] | None) -> dict[str, Any]:
+def merge_context(
+    base: dict[str, Any], overrides: dict[str, Any] | None
+) -> dict[str, Any]:
     """Merge overrides into base context."""
     out = dict(base)
     if overrides:

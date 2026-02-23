@@ -35,5 +35,9 @@ def test_inv_adapter_det_1_stable_mapping() -> None:
         domain_input = {"x": 1, "y": "a", "z": [1, 2]}
         state1, ctx1 = adapter.to_state_context(domain_input)
         state2, ctx2 = adapter.to_state_context(domain_input)
-        assert json.dumps(state1, sort_keys=True) == json.dumps(state2, sort_keys=True), f"{name} state not deterministic"
-        assert json.dumps(ctx1, sort_keys=True) == json.dumps(ctx2, sort_keys=True), f"{name} context not deterministic"
+        assert json.dumps(state1, sort_keys=True) == json.dumps(
+            state2, sort_keys=True
+        ), f"{name} state not deterministic"
+        assert json.dumps(ctx1, sort_keys=True) == json.dumps(ctx2, sort_keys=True), (
+            f"{name} context not deterministic"
+        )

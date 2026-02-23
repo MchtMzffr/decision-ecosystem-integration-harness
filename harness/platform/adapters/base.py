@@ -15,7 +15,9 @@ class BaseAdapter(ABC):
     """Domain-agnostic adapter. Implementations are Example domain only (INV-ADAPTER-DOMAIN-LEAK-1)."""
 
     @abstractmethod
-    def to_state_context(self, domain_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    def to_state_context(
+        self, domain_input: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Map domain request to (state, context) for run_one_step."""
         ...
 

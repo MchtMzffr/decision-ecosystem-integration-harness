@@ -18,7 +18,9 @@ from harness.platform.adapters.base import BaseAdapter
 class ExampleDomainContentModerationAdapter(BaseAdapter):
     """Example domain adapter: content moderation (allow/flag/block). Not for production use."""
 
-    def to_state_context(self, domain_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    def to_state_context(
+        self, domain_input: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Example: text, comment_id -> state; optional metadata -> context."""
         state = {
             "text": domain_input.get("text", ""),

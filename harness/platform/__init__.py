@@ -8,7 +8,11 @@ INV-PLAT-ISOLATION-1: Platform modules do not change pipeline semantics; they on
 Pipeline SSOT remains harness.run_one_step (unchanged).
 """
 
-from harness.platform.catalog import get_context_overrides, get_policy_defaults, merge_context
+from harness.platform.catalog import (
+    get_context_overrides,
+    get_policy_defaults,
+    merge_context,
+)
 from harness.platform.control import (
     clear_ops_override,
     get_ops_state,
@@ -16,7 +20,11 @@ from harness.platform.control import (
     set_ops_state,
     set_red,
 )
-from harness.platform.store import clear_memory_buffer, get_memory_buffer, save as store_save
+from harness.platform.store import (
+    clear_memory_buffer,
+    get_memory_buffer,
+    save as store_save,
+)
 
 __all__ = [
     "get_context_overrides",

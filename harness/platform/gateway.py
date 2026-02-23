@@ -38,7 +38,11 @@ def _clear_rate_limit_for_test() -> None:
 
 def _control_enabled() -> bool:
     """INV-GW-CTRL-LOCK-1: Control endpoints disabled unless DECISION_GATEWAY_ENABLE_CONTROL=1."""
-    return os.environ.get("DECISION_GATEWAY_ENABLE_CONTROL", "0").strip().lower() in ("1", "true", "yes")
+    return os.environ.get("DECISION_GATEWAY_ENABLE_CONTROL", "0").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
 
 
 def _control_token_ok(request: Request) -> bool:
@@ -58,7 +62,13 @@ def _check_body_size(request: Request, max_bytes: int) -> JSONResponse | None:
     if cl is not None:
         try:
             if int(cl) > max_bytes:
-                return JSONResponse(status_code=413, content={"error": "payload_too_large", "detail": f"max {max_bytes} bytes"})
+                return JSONResponse(
+                    status_code=413,
+                    content={
+                        "error": "payload_too_large",
+                        "detail": f"max {max_bytes} bytes",
+                    },
+                )
         except ValueError:
             pass
     return None
@@ -70,7 +80,9 @@ def _rate_limit(client_host: str) -> tuple[bool, int, int, int]:
     When allowed=False: remaining=0, retry_after_sec = seconds until window slot frees.
     """
     now = time.monotonic()
-    window_sec = int(os.environ.get("DECISION_GATEWAY_RATE_WINDOW_SEC", str(_RATE_WINDOW_SEC)))
+    window_sec = int(
+        os.environ.get("DECISION_GATEWAY_RATE_WINDOW_SEC", str(_RATE_WINDOW_SEC))
+    )
     max_req = int(os.environ.get("DECISION_GATEWAY_RATE_MAX", str(_RATE_MAX_REQUESTS)))
     lst = _rate_window[client_host]
     lst.append(now)
@@ -113,8 +125,14 @@ def create_app(
     from harness.platform.store import save as store_save
     from harness.run_one_step import run_one_step
 
-    control_enabled = enable_control_endpoints if enable_control_endpoints is not None else _control_enabled()
-    body_limit = max_body_bytes if max_body_bytes is not None else _DEFAULT_MAX_BODY_BYTES
+    control_enabled = (
+        enable_control_endpoints
+        if enable_control_endpoints is not None
+        else _control_enabled()
+    )
+    body_limit = (
+        max_body_bytes if max_body_bytes is not None else _DEFAULT_MAX_BODY_BYTES
+    )
     app = FastAPI(title="Decision Ecosystem Gateway", version="0.1.0")
 
     @app.middleware("http")
@@ -130,7 +148,10 @@ def create_app(
             if not allowed:
                 resp = JSONResponse(
                     status_code=429,
-                    content={"error": "too_many_requests", "detail": "rate limit exceeded"},
+                    content={
+                        "error": "too_many_requests",
+                        "detail": "rate limit exceeded",
+                    },
                 )
                 resp.headers["Retry-After"] = str(retry_after_sec)
                 resp.headers["X-RateLimit-Limit"] = str(limit)
@@ -168,7 +189,11 @@ def create_app(
                 {
                     "error": "pipeline_error",
                     "detail": str(e),
-                    "final_decision": {"action": "HOLD", "allowed": False, "reasons": ["gateway_fail_closed"]},
+                    "final_decision": {
+                        "action": "HOLD",
+                        "allowed": False,
+                        "reasons": ["gateway_fail_closed"],
+                    },
                     "packet": None,
                 },
                 500,
@@ -207,7 +232,9 @@ def create_app(
         try:
             body = await request.json()
         except Exception as e:
-            return JSONResponse(status_code=400, content={"error": "invalid_json", "detail": str(e)})
+            return JSONResponse(
+                status_code=400, content={"error": "invalid_json", "detail": str(e)}
+            )
         adapter_name = body.get("adapter")
         raw_input = body.get("input", {})
         tenant = body.get("tenant")
@@ -220,11 +247,15 @@ def create_app(
                 adapter = _get_adapter(adapter_name)
                 state, context = adapter.to_state_context(raw_input)
             except (ImportError, KeyError) as e:
-                return JSONResponse(status_code=400, content={"error": "adapter", "detail": str(e)})
+                return JSONResponse(
+                    status_code=400, content={"error": "adapter", "detail": str(e)}
+                )
         else:
             state = raw_input.get("state", raw_input)
             context = raw_input.get("context", {})
-        out, status, fd, packet, report = _run_and_respond(state, context, run_id, step, tenant, now_ms)
+        out, status, fd, packet, report = _run_and_respond(
+            state, context, run_id, step, tenant, now_ms
+        )
         if status != 200:
             return JSONResponse(status_code=status, content=out)
         if adapter_name and fd is not None and packet is not None:
@@ -238,30 +269,58 @@ def create_app(
         try:
             body = await request.json()
         except Exception as e:
-            return JSONResponse(status_code=400, content={"error": "invalid_json", "detail": str(e)})
+            return JSONResponse(
+                status_code=400, content={"error": "invalid_json", "detail": str(e)}
+            )
         state = body.get("state", {})
         context = body.get("context", {})
         run_id = body.get("run_id", "run-0")
         step = int(body.get("step", 0))
         tenant_id = body.get("tenant_id")
         now_ms = int(time.time() * 1000)
-        out, status, _fd, _packet, _report = _run_and_respond(state, context, run_id, step, tenant_id, now_ms)
+        out, status, _fd, _packet, _report = _run_and_respond(
+            state, context, run_id, step, tenant_id, now_ms
+        )
         return JSONResponse(status_code=status, content=out)
 
     @app.get("/control")
     async def control_get(request: Request) -> JSONResponse:
         if not control_enabled:
-            return JSONResponse(status_code=403, content={"error": "control_disabled", "detail": "Set DECISION_GATEWAY_ENABLE_CONTROL=1 to enable"})
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "error": "control_disabled",
+                    "detail": "Set DECISION_GATEWAY_ENABLE_CONTROL=1 to enable",
+                },
+            )
         if not _control_token_ok(request):
-            return JSONResponse(status_code=401, content={"error": "unauthorized", "detail": "X-Decision-Control-Token or Authorization: Bearer required"})
+            return JSONResponse(
+                status_code=401,
+                content={
+                    "error": "unauthorized",
+                    "detail": "X-Decision-Control-Token or Authorization: Bearer required",
+                },
+            )
         return JSONResponse(content=get_ops_state())
 
     @app.post("/control")
     async def control_post(request: Request) -> JSONResponse:
         if not control_enabled:
-            return JSONResponse(status_code=403, content={"error": "control_disabled", "detail": "Set DECISION_GATEWAY_ENABLE_CONTROL=1 to enable"})
+            return JSONResponse(
+                status_code=403,
+                content={
+                    "error": "control_disabled",
+                    "detail": "Set DECISION_GATEWAY_ENABLE_CONTROL=1 to enable",
+                },
+            )
         if not _control_token_ok(request):
-            return JSONResponse(status_code=401, content={"error": "unauthorized", "detail": "X-Decision-Control-Token or Authorization: Bearer required"})
+            return JSONResponse(
+                status_code=401,
+                content={
+                    "error": "unauthorized",
+                    "detail": "X-Decision-Control-Token or Authorization: Bearer required",
+                },
+            )
         try:
             body = await request.json()
         except Exception as e:

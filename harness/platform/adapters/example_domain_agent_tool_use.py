@@ -18,7 +18,9 @@ from harness.platform.adapters.base import BaseAdapter
 class ExampleDomainAgentToolUseAdapter(BaseAdapter):
     """Example domain adapter: agent tool use (allow/deny). Not for production use."""
 
-    def to_state_context(self, domain_input: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    def to_state_context(
+        self, domain_input: dict[str, Any]
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
         """Example: tool_name, args -> state; optional caller_id -> context."""
         state = {
             "tool_name": domain_input.get("tool_name", ""),

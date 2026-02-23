@@ -12,7 +12,9 @@ def test_inv_readme_no_placeholder_1_license() -> None:
     readme = root / "README.md"
     assert readme.exists(), "README.md missing"
     text = readme.read_text(encoding="utf-8")
-    assert "[Add your license]" not in text, "INV-README-NO-PLACEHOLDER-1: Remove license placeholder from README"
+    assert "[Add your license]" not in text, (
+        "INV-README-NO-PLACEHOLDER-1: Remove license placeholder from README"
+    )
 
 
 def test_inv_readme_schema_pin_0_2_2() -> None:
