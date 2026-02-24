@@ -8,7 +8,7 @@ import sys
 import pytest
 
 pytest.importorskip("fastapi")
-from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient  # noqa: E402
 
 
 def test_gateway_exception_returns_fail_closed() -> None:

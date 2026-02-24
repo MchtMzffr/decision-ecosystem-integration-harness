@@ -8,7 +8,7 @@ import os
 import pytest
 
 pytest.importorskip("fastapi")
-from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient  # noqa: E402
 
 
 def test_inv_gw_ctrl_lock_1_default_disabled() -> None:

@@ -36,3 +36,7 @@ markers = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["harness*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

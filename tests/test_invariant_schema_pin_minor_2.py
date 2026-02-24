@@ -25,9 +25,9 @@ def test_schema_pin_minor_2() -> None:
     repo_root = Path(__file__).resolve().parent.parent
     spec = _get_decision_schema_spec(repo_root)
     assert spec is not None, "decision-schema dependency not found in pyproject.toml"
-    assert "0.2" in spec and ("<0.3" in spec or ",<0.3" in spec), (
-        f"decision-schema pin must be >=0.2,<0.3; got {spec!r}"
-    )
-    assert "0.1" not in spec or "0.2" in spec, (
-        f"decision-schema pin must be 0.2.x range; got {spec!r}"
-    )
+    assert "0.2" in spec and (
+        "<0.3" in spec or ",<0.3" in spec
+    ), f"decision-schema pin must be >=0.2,<0.3; got {spec!r}"
+    assert (
+        "0.1" not in spec or "0.2" in spec
+    ), f"decision-schema pin must be 0.2.x range; got {spec!r}"

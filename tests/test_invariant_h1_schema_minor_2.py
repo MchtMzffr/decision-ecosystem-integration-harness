@@ -11,9 +11,9 @@ def test_schema_version_minor_2() -> None:
     from decision_schema import __version__
     from decision_schema.compat import is_compatible
 
-    assert is_compatible(__version__, expected_major=0, min_minor=2, max_minor=2), (
-        f"Harness expects decision-schema 0.2.x, got {__version__}"
-    )
+    assert is_compatible(
+        __version__, expected_major=0, min_minor=2, max_minor=2
+    ), f"Harness expects decision-schema 0.2.x, got {__version__}"
 
 
 @pytest.mark.fullstack

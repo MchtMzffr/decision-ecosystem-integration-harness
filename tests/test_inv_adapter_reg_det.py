@@ -38,6 +38,6 @@ def test_inv_adapter_det_1_stable_mapping() -> None:
         assert json.dumps(state1, sort_keys=True) == json.dumps(
             state2, sort_keys=True
         ), f"{name} state not deterministic"
-        assert json.dumps(ctx1, sort_keys=True) == json.dumps(ctx2, sort_keys=True), (
-            f"{name} context not deterministic"
-        )
+        assert json.dumps(ctx1, sort_keys=True) == json.dumps(
+            ctx2, sort_keys=True
+        ), f"{name} context not deterministic"

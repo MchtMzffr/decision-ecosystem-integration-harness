@@ -17,6 +17,6 @@ def test_inv_adapter_domain_leak_1_no_bare_domain_modules() -> None:
         name = mod.name
         if name in allowed_bare:
             continue
-        assert name.startswith("example_domain_"), (
-            f"Adapter module must have example_domain_ prefix: {name}"
-        )
+        assert name.startswith(
+            "example_domain_"
+        ), f"Adapter module must have example_domain_ prefix: {name}"
